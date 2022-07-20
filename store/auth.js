@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth'
 
 export const state = () => ({
   isLoggedIn: false,
@@ -26,13 +26,25 @@ export const actions = {
         commit('setLoginState', true)
         commit('setUserUid', userCredential.user.uid)
         commit('setEmail', userCredential.user.email)
+        // eslint-disable-next-line no-console
         console.log('ログイン完了!')
         this.$router.push('/book')
       })
       .catch((e) => {
         alert(e.message)
+        // eslint-disable-next-line no-console
         console.error('error:', e)
       })
+  },
+
+  async logout({ commit }) {
+    const auth = getAuth(this.$firebase)
+    await signOut(auth).then(() => {
+      commit('setLoginState', false)
+      commit('setUserUid', '')
+      commit('setEmail', '')
+      this.$router.push('/auth/login')
+    })
   },
 }
 
